@@ -26,7 +26,7 @@ Dependencies:
 First of all let's get up to date and install the dependencies:
 
     sudo apt-get update && sudo apt-get dist-upgrade -y
-    sudo apt-get install build-essential make git screen curl nginx -y
+    sudo apt-get install build-essential make git unzip curl nginx -y
 
 Install GO:
 
@@ -40,8 +40,8 @@ Install GO:
 Clone & compile:
 
     git config --global http.https://gopkg.in.followRedirects true
-    git clone https://github.com/Exlo84/ether1pool.git
-    cd ether1pool
+    git clone https://github.com/Exlo84/XeroDreamPool.git
+    cd XeroDreamPool
     make
 
 Installing Redis latest version
@@ -75,9 +75,9 @@ Run
 ### Install Geth
 
     cd ~
-    wget -N https://github.com/Ether1Project/Ether1/releases/download/1.3.0/ether-1-linux-1.3.0.tar.gz
-    tar xfvz ether-1-linux-1.3.0.tar.gz
-    rm ether-1-linux-1.3.0.tar.gz
+    wget -N https://github.com/xero-official/go-xerom/releases/download/2.0.2/geth-linux.zip
+    unzip geth-linux.zip
+    rm geth-linux.zip
     sudo mv geth /usr/local/bin/geth 
 
 Make geth system sercive
@@ -124,11 +124,11 @@ Make pool system service
 Copy the following
 
     [Unit]
-    Description=Ethopool
+    Description=Xeropool
     After=geth.target
     
     [Service]
-    ExecStart=/home/<name>/ether1pool/build/bin/open-ethereum-pool /home/<name>/ether1pool/config.json
+    ExecStart=/home/<name>/XeroDreamPool/build/bin/open-ethereum-pool /home/<name>/XeroDreamPool/build/bin/config.json
     
     [Install]
     WantedBy=multi-user.target
@@ -145,11 +145,11 @@ Then run pool by the following commands
 
 Modify your configuration file
 
-    nano ~/ether1pool/www/config/environment.js
+    nano ~/XeroDreamPool/www/config/environment.js
 
 Create frontend
 
-    cd ~/ether1pool/www/
+    cd ~/XeroDreamPool/www/
     
     sudo npm install -g ember-cli@2.9.1
     sudo npm install -g bower
@@ -157,6 +157,7 @@ Create frontend
     sudo chown -R $USER:$GROUP ~/.config
     npm install
     bower install
+    npm i intl-format-cache
     ./build.sh
 
 
@@ -179,7 +180,7 @@ Be sure to change with your info
     server {
       listen 80 default_server;
       listen [::]:80 default_server;
-      root /home/<name>/ether1pool/www/dist;
+      root /home/<name>/XeroDreamPool/www/dist;
      
      index index.html index.htm index.nginx-debian.html;
      
