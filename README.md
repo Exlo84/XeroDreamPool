@@ -1,6 +1,6 @@
 ## Open Source ether-1 Mining Pool
 
-![Miner's stats page](https://user-images.githubusercontent.com/46317321/72789946-e66b9e80-3c34-11ea-86a8-641fa33a2ab4.png)
+![Miner's stats page](https://i.gyazo.com/f5361009debf4921a21f5fb3bd06b3b2.png)
 
 ### Features
 
