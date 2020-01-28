@@ -1,4 +1,4 @@
-## Open Source ether-1 Mining Pool
+## Open Source Xerom Mining Pool
 
 ![Miner's stats page](https://i.gyazo.com/f5361009debf4921a21f5fb3bd06b3b2.png)
 
@@ -26,7 +26,7 @@ Dependencies:
 First of all let's get up to date and install the dependencies:
 
     sudo apt-get update && sudo apt-get dist-upgrade -y
-    sudo apt-get install build-essential make git unzip curl nginx -y
+    sudo apt-get install build-essential make git screen unzip curl nginx -y
 
 Install GO:
 
