@@ -30,9 +30,9 @@ First of all let's get up to date and install the dependencies:
 
 Install GO:
 
-    wget https://storage.googleapis.com/golang/go1.13.5.linux-amd64.tar.gz
-    tar -xvf go1.13.5.linux-amd64.tar.gz
-    rm go1.13.5.linux-amd64.tar.gz
+    wget https://storage.googleapis.com/golang/go1.14.2.linux-amd64.tar.gz
+    tar -xvf go1.14.2.linux-amd64.tar.gz
+    rm go1.14.2.linux-amd64.tar.gz
     sudo mv go /usr/local
     export GOROOT=/usr/local/go
     export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
@@ -75,7 +75,7 @@ Run
 ### Install Geth
 
     cd ~
-    wget -N https://github.com/xero-official/go-xerom/releases/download/2.0.2/geth-linux.zip
+    wget -N https://github.com/xero-official/go-xerom/releases/download/2.1.0/geth-linux.zip
     unzip geth-linux.zip
     rm geth-linux.zip
     sudo mv geth /usr/local/bin/geth 
