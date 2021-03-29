@@ -149,20 +149,22 @@ Register pool account and open wallet for transaction. Registration is once if a
     cp config.json build/bin/        <--dont forget to put your json files where the pool expects them
     
 #######
-##  additional suggested setup !!
+additional suggested setup !!
 #######
     I suggest you make your pool startup as 3 services instead of just the one laid out.
     I made 3 copys of the config.json file and named them:
+    
       config.json      <--enable proxy, stratum, and API. disable payouts and unlocker
       payout.json      <--enable payouts.  disable proxy, stratum, API, and unlocker
       unlocker.json    <--enable unlocker.  disable proxy, stratum, API, and payouts
+      
     then make additional startups as in the next step to call the unlocker and payouts.
     Running your pool like this means you can restart the pool or unlocker or payouts independantly
     with sudo systemctl restart *pool,payouts,unlocker*
     if you do it this way do not forget to move these config files to build/bin/
     
 #######
-## end of addon
+end of addon
 #######
     
 Make pool system service
