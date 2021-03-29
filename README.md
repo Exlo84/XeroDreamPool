@@ -137,7 +137,7 @@ Run console
 
     geth attach
 
-Register pool account and open wallet for transaction. Registration is once if at all.  If you have an existing keystore file you can place it where it belongs, and just unlock the wallet as below.  Wallet has to be restarted when node is restarted.
+Register pool account and open wallet for transaction. Registration is once if at all.  If you have an existing keystore file you can place it where it belongs, and just unlock the wallet as below.  Wallet has to be unlocked when geth is restarted.
 
     personal.newAccount()
     personal.unlockAccount(eth.accounts[0],"your-password",40000000)
