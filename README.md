@@ -274,6 +274,7 @@ Restart nginx
 ### Credits
 
 Made by sammy007. Licensed under GPLv3.
+
 Graphing and style added by Exlo84.
 
 #### Contributors
