@@ -15,15 +15,15 @@ module.exports = function(environment) {
 
     APP: {
       // API host and port
-      ApiUrl: 'http://xerodream.exlo.tech',
+      ApiUrl: 'http://xero.dkc.services',
 
       // HTTP mining endpoint
-      HttpHost: 'http://xerodream.exlo.tech',
-      HttpPort: 9999,
+      HttpHost: 'http://xero.dkc.services',
+      HttpPort: 8888,
 
       // Stratum mining endpoint
-      StratumHost: 'xerodream.exlo.tech',
-      StratumPort: 9009,
+      StratumHost: 'xero.dkc.services',
+      StratumPort: 8008,
 
       // Fee and payout details
       PoolFee: '0.5%',

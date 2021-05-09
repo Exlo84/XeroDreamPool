@@ -1,4 +1,4 @@
-## Open Source Xerom Mining Pool
+## Open Source Xerom Mining Pool forked from exlo84
 
 ![Miner's stats page](https://i.gyazo.com/f5361009debf4921a21f5fb3bd06b3b2.png)
 
@@ -13,20 +13,20 @@
 * Separate stats for workers: can highlight timed-out workers so miners can perform maintenance of rigs
 * JSON-API for stats
 
-### Building on Linux
+### Building on Linux -- highly recommend Ubuntu 16.04
 
 Dependencies:
 
-  * go >= 1.9
+  * go = 1.14 or 1.15
   * geth or parity
   * redis-server >= 2.8.0
-  * nodejs >= 4 LTS
+  * nodejs = 12 or 14 LTS
   * nginx
 
 First of all let's get up to date and install the dependencies:
 
     sudo apt-get update && sudo apt-get dist-upgrade -y
-    sudo apt-get install build-essential make git screen unzip curl nginx -y
+    sudo apt-get install build-essential make git screen unzip curl nginx pkg-config nmap xterm screen tcl -y
 
 Install GO:
 
@@ -40,9 +40,11 @@ Install GO:
 Clone & compile:
 
     git config --global http.https://gopkg.in.followRedirects true
-    git clone https://github.com/Exlo84/XeroDreamPool.git
+    git clone https://github.com/def670/XeroDreamPool.git
     cd XeroDreamPool
+    chmod +x build/env.sh
     make
+    **if your first make fails do not forget to "make clean" after you fix your issue
 
 Installing Redis latest version
 
@@ -50,27 +52,53 @@ Installing Redis latest version
     tar xvzf redis-stable.tar.gz
     cd redis-stable
     make
+    make test
+    sudo make install
     
-    sudo cp src/redis-server /usr/local/bin/
-    sudo cp src/redis-cli /usr/local/bin/
-        
     sudo mkdir /etc/redis
-    sudo mkdir /var/redis
-            
-    sudo cp utils/redis_init_script /etc/init.d/redis_6379
-    sudo cp redis.conf /etc/redis/6379.conf
-    sudo nano /etc/redis/6379.conf
+    sudo cp ~/redis-stable/redis.conf /etc/redis
+    sudo nano /etc/redis/redis.conf
     
-*Edit the configuration file, making sure to perform the following changes:
+     # Set supervised to systemd
+      supervised systemd
+     # Set the dir
+      dir /var/lib/redis
+      
+Create a Redis systemd config file
+     
+     sudo nano /etc/systemd/system/redis.service
+     
+Add this to the redis system service file and save:
 
-* Set daemonize to yes (by default it is set to no).
-* Set the dir to /var/redis/6379 (very important step!)
+    [Unit]
+    Description=Redis In-Memory Data Store
+    After=network.target
 
-Run
+    [Service]
+    User=redis
+    Group=redis
+    ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf
+    ExecStop=/usr/local/bin/redis-cli shutdown
+    Restart=always
 
-    sudo mkdir /var/redis/6379
-    sudo update-rc.d redis_6379 defaults
-    sudo /etc/init.d/redis_6379 start   
+    [Install]
+    WantedBy=multi-user.target
+    
+Create redis user/group/directorys
+
+    sudo adduser --system --group --no-create-home redis
+    sudo mkdir /var/lib/redis
+    sudo chown redis:redis /var/lib/redis
+    sudo chmod 770 /var/lib/redis
+    
+Using systemctl for pool operations: enable, start, restart, status, and stop commands
+    
+    sudo systemctl enable redis
+    sudo systemctl start redis
+    sudo systemctl restart redis
+    sudo systemctl status redis
+    sudo systemctl stop redis
+    
     
 ### Install Geth
 
@@ -80,7 +108,7 @@ Run
     rm geth-linux.zip
     sudo mv geth /usr/local/bin/geth 
 
-Make geth system sercive
+Make geth system service
 
     sudo nano /etc/systemd/system/geth.service
     
@@ -97,26 +125,48 @@ Copy the following
     [Install]
     WantedBy=multi-user.target
 
-Then run geth by the following commands
+These commands operate the geth system file
 
     sudo systemctl enable geth
     sudo systemctl start geth
+    sudo systemctl restart geth
     sudo systemctl status geth
+    sudo systemctl stop geth
 
 Run console
 
     geth attach
 
-Register pool account and open wallet for transaction. This process is always required, when the wallet node is restarted.
+Register pool account and open wallet for transaction. Registration is once if at all.  If you have an existing keystore file you can place it where it belongs, and just unlock the wallet as below.  Wallet has to be unlocked when geth is restarted.
 
     personal.newAccount()
-    personal.unlockAccount(eth.accounts[0],"password",40000000)
+    personal.unlockAccount(eth.accounts[0],"your-password",40000000)
 
 ### Set up pool
 
     mv config.example.json config.json
     nano config.json
-
+    cp config.json build/bin/        <--dont forget to put your json files where the pool expects them
+    
+#######
+additional suggested setup !!
+#######
+    I suggest you make your pool startup as 3 services instead of just the one laid out.
+    I made 3 copys of the config.json file and named them:
+    
+      config.json      <--enable proxy, stratum, and API. disable payouts and unlocker
+      payout.json      <--enable payouts.  disable proxy, stratum, API, and unlocker
+      unlocker.json    <--enable unlocker.  disable proxy, stratum, API, and payouts
+      
+    then make additional startups as in the next step to call the unlocker and payouts.
+    Running your pool like this means you can restart the pool or unlocker or payouts independantly
+    with sudo systemctl restart *pool,payouts,unlocker*
+    if you do it this way do not forget to move these config files to build/bin/
+    
+#######
+end of addon
+#######
+    
 Make pool system service
 
     sudo nano /etc/systemd/system/pool.service
@@ -124,7 +174,7 @@ Make pool system service
 Copy the following
 
     [Unit]
-    Description=Xeropool
+    Description=Xerom pool
     After=geth.target
     
     [Service]
@@ -133,11 +183,13 @@ Copy the following
     [Install]
     WantedBy=multi-user.target
 
-Then run pool by the following commands
+Use sudo systemctl to call the pool just as above with redis or geth
 
     sudo systemctl enable pool
     sudo systemctl start pool
+    sudo systemctl restart pool
     sudo systemctl status pool
+    sudo systemctl stop pool
 
 ### Building Frontend
 
@@ -158,6 +210,16 @@ Create frontend
     npm install
     bower install
     npm i intl-format-cache
+        intl-format-cache has issues with sammy007 open-ethereum-pool.  once npm has installed
+        it do the following:
+          cd www/node_modules
+          wget https://github.com/sammy007/open-ethereum-pool/files/3618316/intl-format-cache.zip
+          rm intl-fomat-cache
+          unzip intl-format-cache.zip
+          cd intl-format-cache
+          npm install
+          then drop back to www/ and build pool
+          
     ./build.sh
 
 
@@ -204,16 +266,20 @@ Restart nginx
 ### Notes
 
 * Unlocking and payouts are sequential, 1st tx go, 2nd waiting for 1st to confirm and so on. You can disable that in code. Carefully read `docs/PAYOUTS.md`.
-* Also, keep in mind that **unlocking and payouts will halt in case of backend or node RPC errors**. In that case check everything and restart.
+* Also, keep in mind that **unlocking and payouts will halt in case of backend or node RPC errors**. In that case check everything and restart.  **if you follow the multiple json configs then you can restart just the affected portion.
 * You must restart module if you see errors with the word *suspended*.
-* Don't run payouts and unlocker modules as part of mining node. Create separate configs for both, launch independently and make sure you have a single instance of each module running.
+* Don't run payouts and unlocker modules as part of mining node. Create separate configs for both, launch independently and make sure you have a single instance of each module running. 
 * If `poolFeeAddress` is not specified all pool profit will remain on coinbase address. If it specified, make sure to periodically send some dust back required for payments.
 
 ### Credits
 
 Made by sammy007. Licensed under GPLv3.
 
+Graphing and style added by Exlo84.
+
 #### Contributors
 
 [Alex Leverington](https://github.com/subtly)
 [Primate411](https://github.com/Primate411/)
+[Exlo84](https://github.com/Exlo84/)
+[def670](https://github.com/def670/)

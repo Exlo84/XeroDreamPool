@@ -99,7 +99,7 @@
 		"interval": "3h",
 		"daemon": "http://127.0.0.1:8545",
 		"timeout": "10s",
-		"address": "0x",
+		"address": "0x525e1ff24be53fcb94f4709acabc6e2315f7d669",
 		"gas": "21000",
 		"gasPrice": "50000000000",
 		"autoGas": true,
